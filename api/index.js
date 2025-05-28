@@ -139,46 +139,113 @@ const authenticateToken = (req, res, next) => {
 
 // API 路由
 
+// 管理员后台页面
+app.get('/admin.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/admin.html'));
+});
+
 // 根路由 - 返回主页
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+});
+
+// 游戏页面路由
+app.get('/game/:id', (req, res) => {
+  const gameId = req.params.id;
+  
+  // 简单的游戏页面HTML
   res.send(`
     <!DOCTYPE html>
     <html lang="zh-CN">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>乐玩小游戏</title>
+        <title>游戏 - 乐玩小游戏平台</title>
         <style>
-            body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
-            .container { max-width: 800px; margin: 0 auto; }
-            .game-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px; }
-            .game-card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; background: #f9f9f9; }
-            .btn { background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 10px; }
+            body {
+                margin: 0;
+                padding: 20px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .game-header {
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 15px;
+                padding: 20px;
+                margin-bottom: 20px;
+                text-align: center;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                width: 100%;
+                max-width: 1024px;
+            }
+            .game-container {
+                background: white;
+                border-radius: 15px;
+                padding: 20px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                width: 100%;
+                max-width: 1024px;
+                min-height: 600px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .game-placeholder {
+                text-align: center;
+                color: #666;
+                padding: 50px;
+            }
+            .back-btn {
+                background: linear-gradient(45deg, #667eea, #764ba2);
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 20px;
+                text-decoration: none;
+                display: inline-block;
+                margin-right: 10px;
+                transition: all 0.3s ease;
+            }
+            .back-btn:hover {
+                transform: translateY(-2px);
+                color: white;
+            }
         </style>
     </head>
     <body>
-        <div class="container">
-            <h1>🎮 乐玩小游戏平台</h1>
-            <p>欢迎来到我们的休闲游戏聚合平台！</p>
-            <div>
-                <a href="/admin.html" class="btn">管理后台</a>
-                <a href="/api/games" class="btn">游戏列表API</a>
-            </div>
-            <div class="game-grid">
-                <div class="game-card">
-                    <h3>🧩 2048</h3>
-                    <p>经典数字合成游戏</p>
-                </div>
-                <div class="game-card">
-                    <h3>🐍 贪吃蛇</h3>
-                    <p>经典街机游戏</p>
-                </div>
-            </div>
-            <p style="margin-top: 40px; color: #666;">
-                平台状态：✅ 正常运行<br>
-                部署环境：Vercel 无服务器
-            </p>
+        <div class="game-header">
+            <h2>🎮 正在加载游戏 #${gameId}</h2>
+            <a href="/" class="back-btn">
+                <i class="fas fa-arrow-left"></i> 返回首页
+            </a>
         </div>
+        
+        <div class="game-container">
+            <div class="game-placeholder">
+                <h3>🎯 游戏开发中</h3>
+                <p>由于 Vercel 无服务器环境限制，游戏文件暂时无法正常加载。</p>
+                <p>在完整的部署环境中，这里会显示实际的游戏内容。</p>
+                <br>
+                <a href="/" class="back-btn">返回游戏列表</a>
+            </div>
+        </div>
+        
+        <script>
+            // 记录游戏访问
+            fetch(\`/api/games/${gameId}\`)
+                .then(response => response.json())
+                .then(game => {
+                    if (game.title) {
+                        document.title = game.title + ' - 乐玩小游戏平台';
+                        document.querySelector('.game-header h2').textContent = '🎮 ' + game.title;
+                    }
+                })
+                .catch(error => console.error('Error loading game info:', error));
+        </script>
     </body>
     </html>
   `);

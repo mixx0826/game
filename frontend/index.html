@@ -3,305 +3,443 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-translate="page.title">乐玩小游戏 - 休闲游戏平台</title>
+    <title>乐玩小游戏 - 休闲游戏聚合平台</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="/static/css/style.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero-section {
+            text-align: center;
+            padding: 60px 0;
+            color: white;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 3rem;
+        }
+        
+        .search-box {
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .category-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .category-btn {
+            padding: 10px 25px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .category-btn:hover,
+        .category-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .games-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px 30px 0 0;
+            padding: 50px 0;
+            margin-top: -30px;
+            min-height: 60vh;
+        }
+        
+        .game-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .game-thumbnail {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #f0f2f0, #d0d2d0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: #666;
+        }
+        
+        .game-info {
+            padding: 20px;
+        }
+        
+        .game-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .game-description {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .game-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .game-category {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .game-plays {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        .play-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .play-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        
+        .no-games {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+        }
+        
+        .footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .category-buttons {
+                gap: 10px;
+            }
+            
+            .category-btn {
+                padding: 8px 20px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- 顶部广告位 -->
-    <div id="top-banner-ad" class="ad-banner text-center p-2 bg-light border-bottom">
-        <!-- 顶部横幅广告将在这里显示 -->
-    </div>
-
-    <!-- 导航栏 -->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg header sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="#" data-translate="brand.name">
-                <i class="fas fa-gamepad me-2"></i>乐玩小游戏
+            <a class="navbar-brand fw-bold fs-3" href="/">
+                🎮 乐玩小游戏
             </a>
-            
-            <div class="settings-controls d-flex">
-                <!-- 语言选择器 -->
-                <select class="language-selector" id="languageSelector">
-                    <option value="zh">中文</option>
-                    <option value="en">English</option>
-                </select>
-                
-                <!-- 主题切换 -->
-                <button class="theme-toggle" id="themeToggle" data-translate="theme.toggle">
-                    <i class="fas fa-moon me-1"></i><span data-translate="theme.dark">深色</span>
-                </button>
-            </div>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-translate="nav.home">首页</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#games" data-translate="nav.games">游戏</a>
-                    </li>
-                </ul>
+            <div class="d-flex">
+                <a href="/admin.html" class="btn btn-outline-primary">
+                    <i class="fas fa-cog"></i> 管理后台
+                </a>
             </div>
         </div>
     </nav>
 
-    <!-- 主要内容区域 -->
-    <div class="container" style="margin-top: 100px;">
-        <!-- 顶部横幅广告 -->
-        <div class="top-banner-ad" id="topBannerAd"></div>
-        
-        <!-- 搜索栏 -->
-        <div class="row justify-content-center mb-4">
-            <div class="col-md-6">
-                <div class="search-container">
-                    <input type="text" class="form-control search-input" id="searchInput" 
-                           data-translate-placeholder="search.placeholder" placeholder="搜索游戏...">
-                </div>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">🎮 乐玩小游戏平台</h1>
+            <p class="hero-subtitle">发现最有趣的休闲小游戏，随时随地享受游戏乐趣</p>
+            
+            <!-- Search -->
+            <div class="search-container">
+                <input type="text" class="form-control search-box" placeholder="🔍 搜索你喜欢的游戏..." id="searchInput">
+            </div>
+            
+            <!-- Categories -->
+            <div class="category-buttons">
+                <a href="#" class="category-btn active" data-category="all">全部游戏</a>
+                <a href="#" class="category-btn" data-category="puzzle">益智游戏</a>
+                <a href="#" class="category-btn" data-category="arcade">街机游戏</a>
+                <a href="#" class="category-btn" data-category="casual">休闲游戏</a>
+                <a href="#" class="category-btn" data-category="action">动作游戏</a>
             </div>
         </div>
+    </section>
 
-        <div class="row">
-            <!-- 侧边栏广告 -->
-            <div class="col-lg-2 d-none d-lg-block">
-                <div id="sidebar-ad" class="sticky-top">
-                    <div class="ad-sidebar bg-light border rounded p-3 mb-3">
-                        <h6 class="text-muted">赞助商</h6>
-                        <!-- 侧边栏广告将在这里显示 -->
-                        <div class="text-center">
-                            <small class="text-muted">广告位</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 游戏内容区 -->
-            <div class="col-lg-8">
-                <!-- 游戏分类标签 -->
-                <div class="category-tabs" id="categoryTabs">
-                    <ul class="nav nav-pills justify-content-center">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#" data-category="all" data-translate="category.all">全部</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-category="latest" data-translate="category.latest">最新</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-category="casual" data-translate="category.casual">休闲</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-category="puzzle" data-translate="category.puzzle">益智</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-category="action" data-translate="category.action">动作</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-category="arcade" data-translate="category.arcade">街机</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- 加载指示器 -->
-                <div id="loading" class="text-center py-5">
+    <!-- Games Section -->
+    <section class="games-section">
+        <div class="container">
+            <div id="gamesContainer" class="row g-4">
+                <!-- 游戏卡片将在这里动态加载 -->
+                <div class="loading">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">加载中...</span>
                     </div>
-                </div>
-
-                <!-- 游戏网格 -->
-                <div id="gamesGrid" class="row g-3" style="display: none;">
-                    <!-- 游戏卡片将通过JavaScript动态加载 -->
-                </div>
-
-                <!-- 无游戏提示 -->
-                <div id="noGames" class="text-center py-5" style="display: none;">
-                    <i class="fas fa-gamepad fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">暂无游戏</h4>
-                    <p class="text-muted">请稍后再试或联系管理员</p>
-                </div>
-            </div>
-
-            <!-- 右侧边栏广告 -->
-            <div class="col-lg-2 d-none d-lg-block">
-                <div id="right-sidebar-ad" class="sticky-top">
-                    <div class="ad-sidebar bg-light border rounded p-3 mb-3">
-                        <h6 class="text-muted">推荐</h6>
-                        <!-- 右侧边栏广告将在这里显示 -->
-                        <div class="text-center">
-                            <small class="text-muted">广告位</small>
-                        </div>
-                    </div>
+                    <p class="mt-3">正在加载精彩游戏...</p>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- 底部 -->
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h5 data-translate="footer.about">关于我们</h5>
-                    <p data-translate="footer.description">
-                        乐玩小游戏是一个休闲游戏平台，致力于为各个年龄段的玩家提供高质量的浏览器游戏。
-                    </p>
-                </div>
-                
-                <div class="footer-section">
-                    <h5 data-translate="footer.quick_links">快速链接</h5>
-                    <a href="#" data-translate="footer.home">首页</a>
-                    <a href="#games" data-translate="footer.games">游戏</a>
-                    <a href="#" data-translate="footer.new_games">新游戏</a>
-                    <a href="#" data-translate="footer.popular">热门游戏</a>
-                </div>
-                
-                <div class="footer-section">
-                    <h5 data-translate="footer.support">支持</h5>
-                    <a href="#" onclick="showContactModal()" data-translate="footer.contact">联系我们</a>
-                    <a href="#" onclick="showPrivacyModal()" data-translate="footer.privacy">隐私政策</a>
-                    <a href="#" onclick="showTermsModal()" data-translate="footer.terms">服务条款</a>
-                    <a href="#" onclick="showDeveloperModal()" data-translate="footer.developer">开发者信息</a>
-                </div>
-                
-                <div class="footer-section">
-                    <h5 data-translate="footer.follow">关注我们</h5>
-                    <div class="social-links">
-                        <a href="#" class="me-3"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="me-3"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="me-3"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 底部设置栏 -->
-            <div class="footer-settings">
-                <div class="settings-row">
-                    <div class="language-setting">
-                        <span class="setting-label">语言:</span>
-                        <select class="footer-language-selector" id="footerLanguageSelector">
-                            <option value="zh">中文</option>
-                            <option value="en">English</option>
-                        </select>
-                    </div>
-                    <div class="theme-setting">
-                        <span class="setting-label">主题:</span>
-                        <button class="footer-theme-toggle" id="footerThemeToggle">
-                            <i class="fas fa-moon me-1"></i><span>深色模式</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="footer-bottom">
-                <p data-translate="footer.copyright">&copy; 2024 乐玩小游戏平台. 保留所有权利.</p>
-            </div>
+            <p>&copy; 2024 乐玩小游戏平台. 致力于为您提供最优质的休闲游戏体验.</p>
+            <p>
+                <small>
+                    <i class="fas fa-server"></i> 部署在 Vercel 无服务器平台 | 
+                    <i class="fas fa-code"></i> 基于 Node.js + Express.js 构建
+                </small>
+            </p>
         </div>
     </footer>
 
-    <!-- 游戏弹窗 -->
-    <div class="modal fade" id="gameModal" tabindex="-1">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="gameModalTitle"></h5>
-                    <div>
-                        <button type="button" class="btn btn-sm btn-outline-primary me-2" id="fullscreenBtn" data-translate="game.fullscreen">
-                            <i class="fas fa-expand"></i> Fullscreen
-                        </button>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                </div>
-                <div class="modal-body">
-                    <iframe id="gameFrame" class="game-frame" src=""></iframe>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 联系我们模态框 -->
-    <div class="modal fade" id="contactModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" data-translate="contact.title">Contact Us</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p data-translate="contact.description">We'd love to hear from you! Get in touch with us through any of the following methods:</p>
-                    <div class="contact-info">
-                        <p><i class="fas fa-envelope me-2"></i> <strong data-translate="contact.email">Email:</strong> contact@fungames.com</p>
-                        <p><i class="fas fa-phone me-2"></i> <strong data-translate="contact.phone">Phone:</strong> +1 (555) 123-4567</p>
-                        <p><i class="fas fa-map-marker-alt me-2"></i> <strong data-translate="contact.address">Address:</strong> 123 Game Street, Gaming City, GC 12345</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 隐私政策模态框 -->
-    <div class="modal fade" id="privacyModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" data-translate="privacy.title">Privacy Policy</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div data-translate="privacy.content">
-                        <h6>Information We Collect</h6>
-                        <p>We collect information to provide better services to our users. This includes game preferences, usage statistics, and technical information.</p>
-                        
-                        <h6>How We Use Information</h6>
-                        <p>We use the collected information to improve our games, provide personalized recommendations, and ensure platform security.</p>
-                        
-                        <h6>Information Sharing</h6>
-                        <p>We do not sell or share your personal information with third parties without your explicit consent.</p>
-                        
-                        <h6>Data Security</h6>
-                        <p>We implement appropriate security measures to protect your personal information against unauthorized access.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 开发者信息模态框 -->
-    <div class="modal fade" id="developerModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" data-translate="developer.title">Developer Information</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div data-translate="developer.content">
-                        <h6>Development Team</h6>
-                        <p>Fun Games Platform is developed by a passionate team of game enthusiasts and web developers.</p>
-                        
-                        <h6>Technology Stack</h6>
-                        <ul>
-                            <li>Frontend: HTML5, CSS3, JavaScript, Bootstrap 5</li>
-                            <li>Backend: Node.js, Express.js</li>
-                            <li>Database: SQLite3</li>
-                            <li>Authentication: JWT</li>
-                        </ul>
-                        
-                        <h6>Version</h6>
-                        <p>Platform Version: 1.0.0</p>
-                        <p>Last Updated: December 2024</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/static/js/main.js"></script>
+    <script>
+        let allGames = [];
+        let currentCategory = 'all';
+        let searchTerm = '';
+
+        // 页面加载时获取游戏列表
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGames();
+            setupEventListeners();
+        });
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 分类按钮点击
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // 更新激活状态
+                    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 更新当前分类
+                    currentCategory = this.dataset.category;
+                    filterGames();
+                });
+            });
+
+            // 搜索输入
+            document.getElementById('searchInput').addEventListener('input', function() {
+                searchTerm = this.value.toLowerCase();
+                filterGames();
+            });
+        }
+
+        // 加载游戏列表
+        async function loadGames() {
+            try {
+                const response = await fetch('/api/games');
+                if (!response.ok) {
+                    throw new Error('加载游戏失败');
+                }
+                allGames = await response.json();
+                renderGames(allGames);
+            } catch (error) {
+                console.error('Error loading games:', error);
+                showError('加载游戏时出错，请稍后重试');
+            }
+        }
+
+        // 过滤游戏
+        function filterGames() {
+            let filteredGames = allGames;
+
+            // 按分类过滤
+            if (currentCategory !== 'all') {
+                filteredGames = filteredGames.filter(game => game.category === currentCategory);
+            }
+
+            // 按搜索词过滤
+            if (searchTerm) {
+                filteredGames = filteredGames.filter(game => 
+                    game.title.toLowerCase().includes(searchTerm) ||
+                    game.description.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            renderGames(filteredGames);
+        }
+
+        // 渲染游戏列表
+        function renderGames(games) {
+            const container = document.getElementById('gamesContainer');
+            
+            if (games.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12">
+                        <div class="no-games">
+                            <i class="fas fa-gamepad fa-3x mb-3"></i>
+                            <h4>暂无游戏</h4>
+                            <p>没有找到符合条件的游戏，试试其他搜索词或分类吧！</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = games.map(game => `
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="game-card" onclick="playGame(${game.id})">
+                        <div class="game-thumbnail">
+                            ${getGameIcon(game.category)}
+                        </div>
+                        <div class="game-info">
+                            <h5 class="game-title">${game.title}</h5>
+                            <p class="game-description">${game.description || '暂无描述'}</p>
+                            <div class="game-meta">
+                                <span class="game-category">${getCategoryName(game.category)}</span>
+                                <span class="game-plays">
+                                    <i class="fas fa-eye"></i> ${game.play_count || 0}
+                                </span>
+                            </div>
+                            <div class="text-center mt-3">
+                                <a href="#" class="play-btn" onclick="event.stopPropagation(); playGame(${game.id})">
+                                    <i class="fas fa-play"></i> 开始游戏
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 获取游戏图标
+        function getGameIcon(category) {
+            const icons = {
+                puzzle: '🧩',
+                arcade: '🕹️',
+                casual: '🎮',
+                action: '⚡',
+                strategy: '🎯',
+                sports: '⚽'
+            };
+            return icons[category] || '🎮';
+        }
+
+        // 获取分类名称
+        function getCategoryName(category) {
+            const names = {
+                puzzle: '益智',
+                arcade: '街机',
+                casual: '休闲',
+                action: '动作',
+                strategy: '策略',
+                sports: '体育'
+            };
+            return names[category] || '休闲';
+        }
+
+        // 播放游戏
+        function playGame(gameId) {
+            // 创建游戏窗口
+            const gameWindow = window.open(`/game/${gameId}`, '_blank', 'width=1024,height=768,scrollbars=yes,resizable=yes');
+            
+            if (!gameWindow) {
+                alert('请允许弹出窗口以打开游戏');
+                return;
+            }
+
+            // 记录游戏播放
+            fetch(`/api/games/${gameId}`, { method: 'GET' })
+                .catch(error => console.error('Error tracking game play:', error));
+        }
+
+        // 显示错误信息
+        function showError(message) {
+            const container = document.getElementById('gamesContainer');
+            container.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-warning text-center">
+                        <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                        <h5>加载失败</h5>
+                        <p>${message}</p>
+                        <button class="btn btn-primary" onclick="loadGames()">重试</button>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
 </body>
 </html> 
