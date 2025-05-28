@@ -151,7 +151,7 @@ app.use(session({
   cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
 }));
 
-// 静态文件服务 - 简化路径
+// 静态文件服务 - 修复Vercel部署路径
 app.use('/static', express.static(path.join(__dirname, '../static')));
 app.use('/games', express.static(path.join(__dirname, '../games')));
 
