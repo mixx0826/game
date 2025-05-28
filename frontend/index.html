@@ -7,275 +7,495 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
         }
         
         .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
         
-        .hero-section {
-            text-align: center;
-            padding: 60px 0;
+        .navbar-brand {
+            font-weight: 700;
+            color: #2563eb !important;
+            font-size: 1.8rem;
+        }
+        
+        .hero-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            padding: 60px 0;
+            text-align: center;
         }
         
         .hero-title {
-            font-size: 3.5rem;
+            font-size: 3rem;
             font-weight: 700;
             margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
         
         .hero-subtitle {
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
+            font-size: 1.2rem;
             opacity: 0.9;
+            margin-bottom: 2rem;
         }
         
         .search-container {
             max-width: 600px;
-            margin: 0 auto 3rem;
+            margin: 0 auto 2rem;
         }
         
         .search-box {
             border: none;
-            border-radius: 50px;
-            padding: 15px 25px;
-            font-size: 1.1rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-radius: 25px;
+            padding: 15px 50px 15px 20px;
+            font-size: 1rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.95);
+        }
+        
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: #2563eb;
+            color: white;
+            border-radius: 20px;
+            padding: 10px 15px;
+        }
+        
+        .category-nav {
+            background: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         
         .category-buttons {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-bottom: 3rem;
+            gap: 10px;
             flex-wrap: wrap;
         }
         
         .category-btn {
-            padding: 10px 25px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border-radius: 25px;
+            padding: 8px 20px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            color: #374151;
+            border-radius: 20px;
             text-decoration: none;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            font-weight: 500;
+            white-space: nowrap;
         }
         
         .category-btn:hover,
         .category-btn.active {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.5);
+            background: #2563eb;
+            border-color: #2563eb;
             color: white;
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
         
-        .games-section {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 30px 30px 0 0;
-            padding: 50px 0;
-            margin-top: -30px;
-            min-height: 60vh;
+        .main-content {
+            padding: 30px 0;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0;
+        }
+        
+        .view-more-btn {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .view-more-btn:hover {
+            color: #1d4ed8;
+        }
+        
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
         }
         
         .game-card {
+            position: relative;
             background: white;
-            border-radius: 20px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
             cursor: pointer;
-            height: 100%;
+            aspect-ratio: 1.2;
         }
         
         .game-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
         
         .game-thumbnail {
             width: 100%;
-            height: 200px;
-            background: linear-gradient(45deg, #f0f2f0, #d0d2d0);
+            height: 70%;
+            background: linear-gradient(45deg, #f3f4f6, #e5e7eb);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4rem;
-            color: #666;
+            font-size: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .game-tag {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #ef4444;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            z-index: 10;
+        }
+        
+        .game-tag.hot {
+            background: #ef4444;
+        }
+        
+        .game-tag.new {
+            background: #10b981;
+        }
+        
+        .game-tag.top {
+            background: #f59e0b;
         }
         
         .game-info {
-            padding: 20px;
+            padding: 12px;
+            height: 30%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         
         .game-title {
-            font-size: 1.4rem;
+            font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        
-        .game-description {
-            color: #666;
-            font-size: 0.95rem;
-            margin-bottom: 15px;
-            line-height: 1.5;
+            color: #1f2937;
+            margin: 0;
+            line-height: 1.3;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }
         
         .game-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 15px;
-        }
-        
-        .game-category {
-            background: #e3f2fd;
-            color: #1976d2;
-            padding: 5px 12px;
-            border-radius: 15px;
+            margin-top: 5px;
             font-size: 0.8rem;
-            font-weight: 500;
+            color: #6b7280;
         }
         
-        .game-plays {
-            color: #999;
-            font-size: 0.9rem;
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .game-card:hover .play-overlay {
+            opacity: 1;
         }
         
         .play-btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: #2563eb;
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 12px 20px;
             border-radius: 25px;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
         }
         
         .play-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-            color: white;
+            background: #1d4ed8;
+            transform: scale(1.05);
         }
         
-        .loading {
+        .loading-spinner {
             text-align: center;
             padding: 50px;
-            color: #666;
+            color: #6b7280;
         }
         
         .no-games {
             text-align: center;
-            padding: 50px;
-            color: #999;
+            padding: 60px 20px;
+            color: #9ca3af;
         }
         
         .footer {
-            background: #333;
+            background: #1f2937;
             color: white;
-            text-align: center;
-            padding: 30px 0;
-            margin-top: 50px;
+            padding: 40px 0;
+            margin-top: 60px;
+        }
+        
+        .featured-section {
+            margin-bottom: 50px;
+        }
+        
+        .featured-games {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .featured-card {
+            position: relative;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            aspect-ratio: 1.5;
+        }
+        
+        .featured-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .featured-thumbnail {
+            width: 100%;
+            height: 75%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            position: relative;
+        }
+        
+        .featured-info {
+            padding: 15px;
+            height: 25%;
+        }
+        
+        .featured-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0;
+            color: #1f2937;
         }
         
         @media (max-width: 768px) {
             .hero-title {
-                font-size: 2.5rem;
+                font-size: 2rem;
+            }
+            
+            .games-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
             }
             
             .category-buttons {
-                gap: 10px;
+                gap: 8px;
             }
             
             .category-btn {
-                padding: 8px 20px;
+                padding: 6px 15px;
                 font-size: 0.9rem;
+            }
+            
+            .featured-games {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .games-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
 </head>
 <body>
     <!-- Header -->
-    <nav class="navbar navbar-expand-lg header sticky-top">
+    <nav class="navbar navbar-expand-lg header">
         <div class="container">
-            <a class="navbar-brand fw-bold fs-3" href="/">
+            <a class="navbar-brand" href="/">
                 🎮 乐玩小游戏
             </a>
             <div class="d-flex">
-                <a href="/admin.html" class="btn btn-outline-primary">
+                <a href="/admin.html" class="btn btn-outline-primary btn-sm">
                     <i class="fas fa-cog"></i> 管理后台
                 </a>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
+    <!-- Hero Banner -->
+    <section class="hero-banner">
         <div class="container">
             <h1 class="hero-title">🎮 乐玩小游戏平台</h1>
             <p class="hero-subtitle">发现最有趣的休闲小游戏，随时随地享受游戏乐趣</p>
             
             <!-- Search -->
-            <div class="search-container">
+            <div class="search-container position-relative">
                 <input type="text" class="form-control search-box" placeholder="🔍 搜索你喜欢的游戏..." id="searchInput">
-            </div>
-            
-            <!-- Categories -->
-            <div class="category-buttons">
-                <a href="#" class="category-btn active" data-category="all">全部游戏</a>
-                <a href="#" class="category-btn" data-category="puzzle">益智游戏</a>
-                <a href="#" class="category-btn" data-category="arcade">街机游戏</a>
-                <a href="#" class="category-btn" data-category="casual">休闲游戏</a>
-                <a href="#" class="category-btn" data-category="action">动作游戏</a>
+                <button class="search-btn" type="button">
+                    <i class="fas fa-search"></i>
+                </button>
             </div>
         </div>
     </section>
 
-    <!-- Games Section -->
-    <section class="games-section">
+    <!-- Category Navigation -->
+    <section class="category-nav">
         <div class="container">
-            <div id="gamesContainer" class="row g-4">
-                <!-- 游戏卡片将在这里动态加载 -->
-                <div class="loading">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">加载中...</span>
-                    </div>
-                    <p class="mt-3">正在加载精彩游戏...</p>
-                </div>
+            <div class="category-buttons">
+                <a href="#" class="category-btn active" data-category="all">
+                    <i class="fas fa-th-large"></i> 全部游戏
+                </a>
+                <a href="#" class="category-btn" data-category="puzzle">
+                    <i class="fas fa-puzzle-piece"></i> 益智游戏
+                </a>
+                <a href="#" class="category-btn" data-category="arcade">
+                    <i class="fas fa-gamepad"></i> 街机游戏
+                </a>
+                <a href="#" class="category-btn" data-category="casual">
+                    <i class="fas fa-smile"></i> 休闲游戏
+                </a>
+                <a href="#" class="category-btn" data-category="action">
+                    <i class="fas fa-bolt"></i> 动作游戏
+                </a>
             </div>
         </div>
     </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Featured Games Section -->
+            <section class="featured-section">
+                <div class="section-header">
+                    <h2 class="section-title">🔥 精选游戏</h2>
+                    <a href="#" class="view-more-btn" onclick="showAllGames()">
+                        查看更多 <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div id="featuredGames" class="featured-games">
+                    <!-- Featured games will be loaded here -->
+                </div>
+            </section>
+
+            <!-- All Games Section -->
+            <section>
+                <div class="section-header">
+                    <h2 class="section-title" id="sectionTitle">🎯 热门游戏</h2>
+                    <a href="#" class="view-more-btn" id="viewMoreBtn" onclick="loadMoreGames()">
+                        查看更多 <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div id="gamesContainer" class="games-grid">
+                    <!-- Games will be loaded here -->
+                    <div class="loading-spinner w-100">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">加载中...</span>
+                        </div>
+                        <p class="mt-3">正在加载精彩游戏...</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <p>&copy; 2024 乐玩小游戏平台. 致力于为您提供最优质的休闲游戏体验.</p>
-            <p>
-                <small>
-                    <i class="fas fa-server"></i> 部署在 Vercel 无服务器平台 | 
-                    <i class="fas fa-code"></i> 基于 Node.js + Express.js 构建
-                </small>
-            </p>
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-md-12">
+                    <h5>🎮 乐玩小游戏平台</h5>
+                    <p class="mb-3">致力于为您提供最优质的休闲游戏体验</p>
+                    <div class="d-flex justify-content-center gap-3 mb-3">
+                        <a href="#" class="text-white-50"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-white-50"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white-50"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white-50"><i class="fab fa-youtube"></i></a>
+                    </div>
+                    <p class="text-white-50">
+                        <small>
+                            <i class="fas fa-server"></i> 部署在 Vercel 无服务器平台 | 
+                            <i class="fas fa-code"></i> 基于 Node.js + Express.js 构建
+                        </small>
+                    </p>
+                </div>
+            </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let allGames = [];
+        let displayedGames = [];
         let currentCategory = 'all';
         let searchTerm = '';
+        let gamesPerPage = 12;
+        let currentPage = 1;
 
         // 页面加载时获取游戏列表
         document.addEventListener('DOMContentLoaded', function() {
@@ -296,14 +516,22 @@
                     
                     // 更新当前分类
                     currentCategory = this.dataset.category;
-                    filterGames();
+                    currentPage = 1;
+                    updateSectionTitle();
+                    filterAndDisplayGames();
                 });
             });
 
             // 搜索输入
             document.getElementById('searchInput').addEventListener('input', function() {
                 searchTerm = this.value.toLowerCase();
-                filterGames();
+                currentPage = 1;
+                filterAndDisplayGames();
+            });
+
+            // 搜索按钮
+            document.querySelector('.search-btn').addEventListener('click', function() {
+                filterAndDisplayGames();
             });
         }
 
@@ -315,16 +543,69 @@
                     throw new Error('加载游戏失败');
                 }
                 allGames = await response.json();
-                renderGames(allGames);
+                
+                displayFeaturedGames();
+                filterAndDisplayGames();
             } catch (error) {
                 console.error('Error loading games:', error);
                 showError('加载游戏时出错，请稍后重试');
             }
         }
 
-        // 过滤游戏
-        function filterGames() {
-            let filteredGames = allGames;
+        // 获取游戏标签 - 使用数据库中的标签
+        function getGameTag(game) {
+            if (game.tag) {
+                return { 
+                    type: game.tag, 
+                    text: game.tag.toUpperCase() 
+                };
+            }
+            return null;
+        }
+
+        // 显示精选游戏
+        function displayFeaturedGames() {
+            const featuredContainer = document.getElementById('featuredGames');
+            // 优先显示有标签的游戏，然后是播放量高的游戏
+            const featuredGames = allGames
+                .filter(game => game.tag || game.play_count > 20)
+                .slice(0, 3);
+            
+            if (featuredGames.length < 3) {
+                // 如果标签游戏不足3个，补充其他游戏
+                const otherGames = allGames
+                    .filter(game => !featuredGames.includes(game))
+                    .slice(0, 3 - featuredGames.length);
+                featuredGames.push(...otherGames);
+            }
+            
+            featuredContainer.innerHTML = featuredGames.map(game => `
+                <div class="featured-card" onclick="playGame(${game.id})">
+                    <div class="featured-thumbnail">
+                        ${game.tag ? `<div class="game-tag ${game.tag}">${game.tag.toUpperCase()}</div>` : ''}
+                        ${getGameIcon(game.category, 'featured')}
+                    </div>
+                    <div class="featured-info">
+                        <h3 class="featured-title">${game.title}</h3>
+                    </div>
+                    <div class="play-overlay">
+                        <button class="play-btn">
+                            <i class="fas fa-play"></i> 立即开始
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 过滤并显示游戏
+        function filterAndDisplayGames() {
+            // 排除已在精选区域显示的游戏
+            const featuredGameIds = allGames
+                .filter(game => game.tag || game.play_count > 20)
+                .slice(0, 3)
+                .map(game => game.id);
+
+            let filteredGames = allGames.filter(game => !featuredGameIds.includes(game.id));
 
             // 按分类过滤
             if (currentCategory !== 'all') {
@@ -335,11 +616,13 @@
             if (searchTerm) {
                 filteredGames = filteredGames.filter(game => 
                     game.title.toLowerCase().includes(searchTerm) ||
-                    game.description.toLowerCase().includes(searchTerm)
+                    (game.description && game.description.toLowerCase().includes(searchTerm))
                 );
             }
 
-            renderGames(filteredGames);
+            displayedGames = filteredGames;
+            renderGames(displayedGames.slice(0, gamesPerPage * currentPage));
+            updateViewMoreButton();
         }
 
         // 渲染游戏列表
@@ -348,45 +631,43 @@
             
             if (games.length === 0) {
                 container.innerHTML = `
-                    <div class="col-12">
-                        <div class="no-games">
-                            <i class="fas fa-gamepad fa-3x mb-3"></i>
-                            <h4>暂无游戏</h4>
-                            <p>没有找到符合条件的游戏，试试其他搜索词或分类吧！</p>
-                        </div>
+                    <div class="no-games col-12">
+                        <i class="fas fa-gamepad fa-4x mb-3"></i>
+                        <h4>暂无游戏</h4>
+                        <p>没有找到符合条件的游戏，试试其他搜索词或分类吧！</p>
                     </div>
                 `;
                 return;
             }
 
             container.innerHTML = games.map(game => `
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="game-card" onclick="playGame(${game.id})">
-                        <div class="game-thumbnail">
-                            ${getGameIcon(game.category)}
+                <div class="game-card" onclick="playGame(${game.id})">
+                    <div class="game-thumbnail">
+                        ${game.tag ? `<div class="game-tag ${game.tag}">${game.tag.toUpperCase()}</div>` : ''}
+                        ${getGameIcon(game.category)}
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">${game.title}</h3>
+                        <div class="game-meta">
+                            <span class="category-badge">
+                                <i class="fas fa-tag"></i> ${getCategoryName(game.category)}
+                            </span>
+                            <span class="play-count">
+                                <i class="fas fa-eye"></i> ${game.play_count || 0}
+                            </span>
                         </div>
-                        <div class="game-info">
-                            <h5 class="game-title">${game.title}</h5>
-                            <p class="game-description">${game.description || '暂无描述'}</p>
-                            <div class="game-meta">
-                                <span class="game-category">${getCategoryName(game.category)}</span>
-                                <span class="game-plays">
-                                    <i class="fas fa-eye"></i> ${game.play_count || 0}
-                                </span>
-                            </div>
-                            <div class="text-center mt-3">
-                                <a href="#" class="play-btn" onclick="event.stopPropagation(); playGame(${game.id})">
-                                    <i class="fas fa-play"></i> 开始游戏
-                                </a>
-                            </div>
-                        </div>
+                    </div>
+                    <div class="play-overlay">
+                        <button class="play-btn">
+                            <i class="fas fa-play"></i> 开始游戏
+                        </button>
                     </div>
                 </div>
             `).join('');
         }
 
         // 获取游戏图标
-        function getGameIcon(category) {
+        function getGameIcon(category, size = 'normal') {
             const icons = {
                 puzzle: '🧩',
                 arcade: '🕹️',
@@ -409,6 +690,60 @@
                 sports: '体育'
             };
             return names[category] || '休闲';
+        }
+
+        // 更新章节标题
+        function updateSectionTitle() {
+            const title = document.getElementById('sectionTitle');
+            const categoryNames = {
+                all: '🎯 热门游戏',
+                puzzle: '🧩 益智游戏',
+                arcade: '🕹️ 街机游戏',
+                casual: '🎮 休闲游戏',
+                action: '⚡ 动作游戏'
+            };
+            title.textContent = categoryNames[currentCategory] || '🎯 热门游戏';
+        }
+
+        // 更新查看更多按钮
+        function updateViewMoreButton() {
+            const viewMoreBtn = document.getElementById('viewMoreBtn');
+            const totalShown = gamesPerPage * currentPage;
+            
+            if (totalShown >= displayedGames.length) {
+                viewMoreBtn.style.display = 'none';
+            } else {
+                viewMoreBtn.style.display = 'block';
+            }
+        }
+
+        // 加载更多游戏
+        function loadMoreGames() {
+            currentPage++;
+            renderGames(displayedGames.slice(0, gamesPerPage * currentPage));
+            updateViewMoreButton();
+        }
+
+        // 显示所有游戏
+        function showAllGames() {
+            currentCategory = 'all';
+            currentPage = 1;
+            
+            // 更新分类按钮状态
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.category === 'all') {
+                    btn.classList.add('active');
+                }
+            });
+            
+            updateSectionTitle();
+            filterAndDisplayGames();
+            
+            // 滚动到游戏区域
+            document.getElementById('sectionTitle').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
         }
 
         // 播放游戏

@@ -59,6 +59,7 @@ db.serialize(() => {
     thumbnail TEXT,
     game_path TEXT NOT NULL,
     category TEXT DEFAULT 'casual',
+    tag TEXT DEFAULT NULL,
     is_active BOOLEAN DEFAULT 1,
     play_count INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -81,24 +82,58 @@ db.serialize(() => {
   // 添加一些示例游戏数据
   const sampleGames = [
     {
-      title: '2048',
-      description: '经典数字合成游戏，合并相同数字达到2048！',
+      title: '2048经典版',
+      description: '经典数字合成游戏，合并相同数字达到2048！挑战你的逻辑思维！',
       thumbnail: '/static/images/default-game.svg',
       game_path: '/games/2048',
-      category: 'puzzle'
+      category: 'puzzle',
+      tag: 'hot'
     },
     {
-      title: '贪吃蛇',
-      description: '经典贪吃蛇游戏，控制蛇吃食物成长！',
+      title: '贪吃蛇大作战',
+      description: '经典贪吃蛇游戏，控制蛇吃食物成长！越长越有挑战性！',
       thumbnail: '/static/images/default-game.svg',
       game_path: '/games/snake',
-      category: 'arcade'
+      category: 'arcade',
+      tag: 'hot'
+    },
+    {
+      title: '俄罗斯方块',
+      description: '经典俄罗斯方块游戏，排列方块获得高分，永恒的经典！',
+      thumbnail: '/static/images/default-game.svg',
+      game_path: '/games/tetris',
+      category: 'puzzle',
+      tag: 'new'
+    },
+    {
+      title: '太空射击',
+      description: '激烈的太空射击游戏，消灭外星人保卫地球！',
+      thumbnail: '/static/images/default-game.svg',
+      game_path: '/games/space-shooter',
+      category: 'action',
+      tag: 'new'
+    },
+    {
+      title: '消除泡泡',
+      description: '有趣的泡泡消除游戏，三个相同颜色就能消除！',
+      thumbnail: '/static/images/default-game.svg',
+      game_path: '/games/bubble-shooter',
+      category: 'casual',
+      tag: null
+    },
+    {
+      title: '跳跃小鸟',
+      description: '控制小鸟飞跃障碍物，考验你的反应能力！',
+      thumbnail: '/static/images/default-game.svg',
+      game_path: '/games/flappy-bird',
+      category: 'casual',
+      tag: 'top'
     }
   ];
 
   sampleGames.forEach(game => {
-    db.run('INSERT OR IGNORE INTO games (title, description, thumbnail, game_path, category) VALUES (?, ?, ?, ?, ?)', 
-      [game.title, game.description, game.thumbnail, game.game_path, game.category]);
+    db.run('INSERT OR IGNORE INTO games (title, description, thumbnail, game_path, category, tag) VALUES (?, ?, ?, ?, ?, ?)', 
+      [game.title, game.description, game.thumbnail, game.game_path, game.category, game.tag]);
   });
 });
 
