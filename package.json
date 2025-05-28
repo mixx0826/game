@@ -1,0 +1,35 @@
+{
+  "name": "game-platform",
+  "version": "1.0.0",
+  "description": "乐玩小游戏 - 在线休闲游戏聚合平台",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "build": "echo 'No build process needed'",
+    "test": "echo 'No tests specified'"
+  },
+  "keywords": [
+    "games",
+    "html5",
+    "platform",
+    "nodejs",
+    "express"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "cookie-parser": "^1.4.6",
+    "express-session": "^1.17.3",
+    "sqlite3": "^5.1.6",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "unzipper": "^0.10.14"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+} 

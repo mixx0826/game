@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="page.title">乐玩小游戏 - 休闲游戏平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 顶部广告位 -->
+    <div id="top-banner-ad" class="ad-banner text-center p-2 bg-light border-bottom">
+        <!-- 顶部横幅广告将在这里显示 -->
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#" data-translate="brand.name">
+                <i class="fas fa-gamepad me-2"></i>乐玩小游戏
+            </a>
+            
+            <div class="settings-controls d-flex">
+                <!-- 语言选择器 -->
+                <select class="language-selector" id="languageSelector">
+                    <option value="zh">中文</option>
+                    <option value="en">English</option>
+                </select>
+                
+                <!-- 主题切换 -->
+                <button class="theme-toggle" id="themeToggle" data-translate="theme.toggle">
+                    <i class="fas fa-moon me-1"></i><span data-translate="theme.dark">深色</span>
+                </button>
+            </div>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-translate="nav.home">首页</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#games" data-translate="nav.games">游戏</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <div class="container" style="margin-top: 100px;">
+        <!-- 顶部横幅广告 -->
+        <div class="top-banner-ad" id="topBannerAd"></div>
+        
+        <!-- 搜索栏 -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-6">
+                <div class="search-container">
+                    <input type="text" class="form-control search-input" id="searchInput" 
+                           data-translate-placeholder="search.placeholder" placeholder="搜索游戏...">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- 侧边栏广告 -->
+            <div class="col-lg-2 d-none d-lg-block">
+                <div id="sidebar-ad" class="sticky-top">
+                    <div class="ad-sidebar bg-light border rounded p-3 mb-3">
+                        <h6 class="text-muted">赞助商</h6>
+                        <!-- 侧边栏广告将在这里显示 -->
+                        <div class="text-center">
+                            <small class="text-muted">广告位</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 游戏内容区 -->
+            <div class="col-lg-8">
+                <!-- 游戏分类标签 -->
+                <div class="category-tabs" id="categoryTabs">
+                    <ul class="nav nav-pills justify-content-center">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" data-category="all" data-translate="category.all">全部</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-category="latest" data-translate="category.latest">最新</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-category="casual" data-translate="category.casual">休闲</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-category="puzzle" data-translate="category.puzzle">益智</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-category="action" data-translate="category.action">动作</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-category="arcade" data-translate="category.arcade">街机</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 加载指示器 -->
+                <div id="loading" class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">加载中...</span>
+                    </div>
+                </div>
+
+                <!-- 游戏网格 -->
+                <div id="gamesGrid" class="row g-3" style="display: none;">
+                    <!-- 游戏卡片将通过JavaScript动态加载 -->
+                </div>
+
+                <!-- 无游戏提示 -->
+                <div id="noGames" class="text-center py-5" style="display: none;">
+                    <i class="fas fa-gamepad fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">暂无游戏</h4>
+                    <p class="text-muted">请稍后再试或联系管理员</p>
+                </div>
+            </div>
+
+            <!-- 右侧边栏广告 -->
+            <div class="col-lg-2 d-none d-lg-block">
+                <div id="right-sidebar-ad" class="sticky-top">
+                    <div class="ad-sidebar bg-light border rounded p-3 mb-3">
+                        <h6 class="text-muted">推荐</h6>
+                        <!-- 右侧边栏广告将在这里显示 -->
+                        <div class="text-center">
+                            <small class="text-muted">广告位</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h5 data-translate="footer.about">关于我们</h5>
+                    <p data-translate="footer.description">
+                        乐玩小游戏是一个休闲游戏平台，致力于为各个年龄段的玩家提供高质量的浏览器游戏。
+                    </p>
+                </div>
+                
+                <div class="footer-section">
+                    <h5 data-translate="footer.quick_links">快速链接</h5>
+                    <a href="#" data-translate="footer.home">首页</a>
+                    <a href="#games" data-translate="footer.games">游戏</a>
+                    <a href="#" data-translate="footer.new_games">新游戏</a>
+                    <a href="#" data-translate="footer.popular">热门游戏</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h5 data-translate="footer.support">支持</h5>
+                    <a href="#" onclick="showContactModal()" data-translate="footer.contact">联系我们</a>
+                    <a href="#" onclick="showPrivacyModal()" data-translate="footer.privacy">隐私政策</a>
+                    <a href="#" onclick="showTermsModal()" data-translate="footer.terms">服务条款</a>
+                    <a href="#" onclick="showDeveloperModal()" data-translate="footer.developer">开发者信息</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h5 data-translate="footer.follow">关注我们</h5>
+                    <div class="social-links">
+                        <a href="#" class="me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 底部设置栏 -->
+            <div class="footer-settings">
+                <div class="settings-row">
+                    <div class="language-setting">
+                        <span class="setting-label">语言:</span>
+                        <select class="footer-language-selector" id="footerLanguageSelector">
+                            <option value="zh">中文</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                    <div class="theme-setting">
+                        <span class="setting-label">主题:</span>
+                        <button class="footer-theme-toggle" id="footerThemeToggle">
+                            <i class="fas fa-moon me-1"></i><span>深色模式</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p data-translate="footer.copyright">&copy; 2024 乐玩小游戏平台. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 游戏弹窗 -->
+    <div class="modal fade" id="gameModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="gameModalTitle"></h5>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-outline-primary me-2" id="fullscreenBtn" data-translate="game.fullscreen">
+                            <i class="fas fa-expand"></i> Fullscreen
+                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <iframe id="gameFrame" class="game-frame" src=""></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 联系我们模态框 -->
+    <div class="modal fade" id="contactModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" data-translate="contact.title">Contact Us</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p data-translate="contact.description">We'd love to hear from you! Get in touch with us through any of the following methods:</p>
+                    <div class="contact-info">
+                        <p><i class="fas fa-envelope me-2"></i> <strong data-translate="contact.email">Email:</strong> contact@fungames.com</p>
+                        <p><i class="fas fa-phone me-2"></i> <strong data-translate="contact.phone">Phone:</strong> +1 (555) 123-4567</p>
+                        <p><i class="fas fa-map-marker-alt me-2"></i> <strong data-translate="contact.address">Address:</strong> 123 Game Street, Gaming City, GC 12345</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 隐私政策模态框 -->
+    <div class="modal fade" id="privacyModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" data-translate="privacy.title">Privacy Policy</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div data-translate="privacy.content">
+                        <h6>Information We Collect</h6>
+                        <p>We collect information to provide better services to our users. This includes game preferences, usage statistics, and technical information.</p>
+                        
+                        <h6>How We Use Information</h6>
+                        <p>We use the collected information to improve our games, provide personalized recommendations, and ensure platform security.</p>
+                        
+                        <h6>Information Sharing</h6>
+                        <p>We do not sell or share your personal information with third parties without your explicit consent.</p>
+                        
+                        <h6>Data Security</h6>
+                        <p>We implement appropriate security measures to protect your personal information against unauthorized access.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 开发者信息模态框 -->
+    <div class="modal fade" id="developerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" data-translate="developer.title">Developer Information</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div data-translate="developer.content">
+                        <h6>Development Team</h6>
+                        <p>Fun Games Platform is developed by a passionate team of game enthusiasts and web developers.</p>
+                        
+                        <h6>Technology Stack</h6>
+                        <ul>
+                            <li>Frontend: HTML5, CSS3, JavaScript, Bootstrap 5</li>
+                            <li>Backend: Node.js, Express.js</li>
+                            <li>Database: SQLite3</li>
+                            <li>Authentication: JWT</li>
+                        </ul>
+                        
+                        <h6>Version</h6>
+                        <p>Platform Version: 1.0.0</p>
+                        <p>Last Updated: December 2024</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/main.js"></script>
+</body>
+</html> 

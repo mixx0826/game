@@ -1,0 +1,473 @@
+// 全局变量
+let games = [];
+let filteredGames = [];
+let currentLanguage = 'en';
+let currentTheme = 'light';
+
+// 多语言翻译内容
+const translations = {
+    en: {
+        'page.title': 'Fun Games - Casual Game Platform',
+        'brand.name': 'Fun Games',
+        'nav.home': 'Home',
+        'nav.games': 'Games',
+        'nav.admin': 'Admin',
+        'search.placeholder': 'Search games...',
+        'category.all': 'All',
+        'category.latest': 'Latest',
+        'category.casual': 'Casual',
+        'category.puzzle': 'Puzzle',
+        'category.action': 'Action',
+        'category.arcade': 'Arcade',
+        'loading': 'Loading...',
+        'sidebar.popular': 'Popular Games',
+        'game.plays': 'plays',
+        'game.play': 'Play Game',
+        'game.fullscreen': 'Fullscreen',
+        'theme.toggle': 'Theme',
+        'theme.dark': 'Dark',
+        'theme.light': 'Light',
+        'footer.about': 'About Us',
+        'footer.description': 'Fun Games is a casual gaming platform dedicated to providing high-quality browser games for players of all ages.',
+        'footer.quick_links': 'Quick Links',
+        'footer.home': 'Home',
+        'footer.games': 'Games',
+        'footer.new_games': 'New Games',
+        'footer.popular': 'Popular Games',
+        'footer.support': 'Support',
+        'footer.contact': 'Contact Us',
+        'footer.privacy': 'Privacy Policy',
+        'footer.terms': 'Terms of Service',
+        'footer.developer': 'Developer Info',
+        'footer.follow': 'Follow Us',
+        'footer.copyright': '© 2024 Fun Games Platform. All rights reserved.',
+        'contact.title': 'Contact Us',
+        'contact.description': 'We\'d love to hear from you! Get in touch with us through any of the following methods:',
+        'contact.email': 'Email:',
+        'contact.phone': 'Phone:',
+        'contact.address': 'Address:',
+        'privacy.title': 'Privacy Policy',
+        'developer.title': 'Developer Information'
+    },
+    zh: {
+        'page.title': '乐玩小游戏 - 休闲游戏平台',
+        'brand.name': '乐玩小游戏',
+        'nav.home': '首页',
+        'nav.games': '游戏',
+        'nav.admin': '管理',
+        'search.placeholder': '搜索游戏...',
+        'category.all': '全部',
+        'category.latest': '最新',
+        'category.casual': '休闲',
+        'category.puzzle': '益智',
+        'category.action': '动作',
+        'category.arcade': '街机',
+        'loading': '加载中...',
+        'sidebar.popular': '热门游戏',
+        'game.plays': '次播放',
+        'game.play': '开始游戏',
+        'game.fullscreen': '全屏',
+        'theme.toggle': '主题',
+        'theme.dark': '深色',
+        'theme.light': '浅色',
+        'footer.about': '关于我们',
+        'footer.description': '乐玩小游戏是一个休闲游戏平台，致力于为各个年龄段的玩家提供高质量的浏览器游戏。',
+        'footer.quick_links': '快速链接',
+        'footer.home': '首页',
+        'footer.games': '游戏',
+        'footer.new_games': '新游戏',
+        'footer.popular': '热门游戏',
+        'footer.support': '支持',
+        'footer.contact': '联系我们',
+        'footer.privacy': '隐私政策',
+        'footer.terms': '服务条款',
+        'footer.developer': '开发者信息',
+        'footer.follow': '关注我们',
+        'footer.copyright': '© 2024 乐玩小游戏平台. 保留所有权利.',
+        'contact.title': '联系我们',
+        'contact.description': '我们很乐意听到您的声音！通过以下任何方式与我们联系：',
+        'contact.email': '邮箱：',
+        'contact.phone': '电话：',
+        'contact.address': '地址：',
+        'privacy.title': '隐私政策',
+        'developer.title': '开发者信息'
+    }
+};
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+});
+
+// 初始化应用
+function initializeApp() {
+    // 从本地存储恢复设置
+    currentLanguage = localStorage.getItem('language') || 'en';
+    currentTheme = localStorage.getItem('theme') || 'light';
+    
+    // 应用设置
+    applyLanguage(currentLanguage);
+    applyTheme(currentTheme);
+    
+    // 设置UI控件
+    document.getElementById('languageSelector').value = currentLanguage;
+    updateThemeButton();
+    
+    // 绑定事件监听器
+    bindEventListeners();
+    
+    // 加载游戏和广告
+    loadGames();
+    loadAds();
+}
+
+// 绑定事件监听器
+function bindEventListeners() {
+    // 语言选择器
+    document.getElementById('languageSelector').addEventListener('change', function(e) {
+        changeLanguage(e.target.value);
+    });
+    
+    // 主题切换
+    document.getElementById('themeToggle').addEventListener('click', function() {
+        toggleTheme();
+    });
+    
+    // 搜索功能
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        filterGames(e.target.value);
+    });
+    
+    // 分类筛选
+    document.getElementById('categoryTabs').addEventListener('click', function(e) {
+        if (e.target.classList.contains('nav-link')) {
+            e.preventDefault();
+            const category = e.target.getAttribute('data-category');
+            filterByCategory(category);
+            
+            // 更新活动状态
+            document.querySelectorAll('#categoryTabs .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            e.target.classList.add('active');
+        }
+    });
+    
+    // 全屏按钮
+    document.getElementById('fullscreenBtn').addEventListener('click', function() {
+        const iframe = document.getElementById('gameFrame');
+        if (iframe.requestFullscreen) {
+            iframe.requestFullscreen();
+        } else if (iframe.webkitRequestFullscreen) {
+            iframe.webkitRequestFullscreen();
+        } else if (iframe.msRequestFullscreen) {
+            iframe.msRequestFullscreen();
+        }
+    });
+}
+
+// 语言切换
+function changeLanguage(language) {
+    currentLanguage = language;
+    localStorage.setItem('language', language);
+    applyLanguage(language);
+    document.getElementById('languageSelector').value = language;
+}
+
+// 应用语言
+function applyLanguage(language) {
+    const elements = document.querySelectorAll('[data-translate]');
+    elements.forEach(element => {
+        const key = element.getAttribute('data-translate');
+        if (translations[language] && translations[language][key]) {
+            element.textContent = translations[language][key];
+        }
+    });
+    
+    // 处理placeholder
+    const placeholderElements = document.querySelectorAll('[data-translate-placeholder]');
+    placeholderElements.forEach(element => {
+        const key = element.getAttribute('data-translate-placeholder');
+        if (translations[language] && translations[language][key]) {
+            element.placeholder = translations[language][key];
+        }
+    });
+    
+    // 更新页面标题
+    if (translations[language] && translations[language]['page.title']) {
+        document.title = translations[language]['page.title'];
+    }
+    
+    // 更新HTML lang属性
+    document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
+}
+
+// 主题切换
+function toggleTheme() {
+    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    localStorage.setItem('theme', currentTheme);
+    applyTheme(currentTheme);
+    updateThemeButton();
+}
+
+// 应用主题
+function applyTheme(theme) {
+    if (theme === 'dark') {
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+    }
+}
+
+// 更新主题按钮
+function updateThemeButton() {
+    const themeBtn = document.getElementById('themeToggle');
+    const icon = themeBtn.querySelector('i');
+    const text = themeBtn.querySelector('span');
+    
+    if (currentTheme === 'dark') {
+        icon.className = 'fas fa-sun me-1';
+        text.textContent = translations[currentLanguage]['theme.light'] || 'Light';
+    } else {
+        icon.className = 'fas fa-moon me-1';
+        text.textContent = translations[currentLanguage]['theme.dark'] || 'Dark';
+    }
+}
+
+// 加载广告
+async function loadAds() {
+    try {
+        const response = await fetch('/api/ad-configs');
+        const ads = await response.json();
+        
+        ads.forEach(ad => {
+            const adElement = document.getElementById(ad.position);
+            if (adElement && ad.ad_code && ad.ad_code.trim()) {
+                adElement.innerHTML = ad.ad_code;
+                adElement.style.display = 'block';
+            } else if (adElement) {
+                adElement.style.display = 'none';
+            }
+        });
+    } catch (error) {
+        console.error('加载广告失败:', error);
+        // 隐藏空的广告位
+        document.querySelectorAll('.top-banner-ad, .sidebar-ad').forEach(ad => {
+            ad.style.display = 'none';
+        });
+    }
+}
+
+// 加载游戏
+async function loadGames() {
+    try {
+        const response = await fetch('/api/games');
+        games = await response.json();
+        filteredGames = [...games];
+        renderGames(filteredGames);
+        updatePopularGames();
+    } catch (error) {
+        console.error('加载游戏失败:', error);
+        document.getElementById('gamesContainer').innerHTML = `
+            <div class="text-center text-white">
+                <p>Failed to load games. Please try again later.</p>
+            </div>
+        `;
+    }
+}
+
+// 渲染游戏
+function renderGames(gamesToRender) {
+    const container = document.getElementById('gamesContainer');
+    
+    if (!gamesToRender || gamesToRender.length === 0) {
+        container.innerHTML = `
+            <div class="text-center text-white">
+                <i class="fas fa-gamepad fa-3x mb-3"></i>
+                <p>No games found.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const gamesHTML = gamesToRender.map(game => `
+        <div class="game-card" onclick="playGame(${game.id})">
+            <div class="game-thumbnail">
+                ${game.thumbnail ? `<img src="${game.thumbnail}" alt="${game.title}" style="width: 100%; height: 100%; object-fit: cover;">` : game.title}
+                <div class="play-icon">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="game-info">
+                <div class="game-title">${game.title}</div>
+                <div class="game-description">${game.description || ''}</div>
+                <div class="game-meta">
+                    <span class="game-category">${getCategoryName(game.category)}</span>
+                    <span class="game-plays">
+                        <i class="fas fa-play me-1"></i>${game.play_count || 0} ${translations[currentLanguage]['game.plays'] || 'plays'}
+                    </span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    container.innerHTML = gamesHTML;
+}
+
+// 获取分类名称
+function getCategoryName(category) {
+    const categoryMap = {
+        'casual': translations[currentLanguage]['category.casual'] || 'Casual',
+        'puzzle': translations[currentLanguage]['category.puzzle'] || 'Puzzle',
+        'action': translations[currentLanguage]['category.action'] || 'Action',
+        'arcade': translations[currentLanguage]['category.arcade'] || 'Arcade'
+    };
+    return categoryMap[category] || category;
+}
+
+// 更新热门游戏
+function updatePopularGames() {
+    const popularContainer = document.getElementById('popularGames');
+    const popularGames = [...games]
+        .sort((a, b) => (b.play_count || 0) - (a.play_count || 0))
+        .slice(0, 5);
+    
+    if (popularGames.length === 0) {
+        popularContainer.innerHTML = `<p class="text-muted">${translations[currentLanguage]['loading'] || 'Loading...'}</p>`;
+        return;
+    }
+    
+    const popularHTML = popularGames.map((game, index) => `
+        <div class="d-flex justify-content-between align-items-center py-2 ${index > 0 ? 'border-top border-secondary' : ''}" 
+             style="cursor: pointer;" onclick="playGame(${game.id})">
+            <div class="text-white">
+                <strong>${index + 1}. ${game.title}</strong>
+            </div>
+            <div class="text-muted small">
+                <i class="fas fa-play me-1"></i>${game.play_count || 0}
+            </div>
+        </div>
+    `).join('');
+    
+    popularContainer.innerHTML = popularHTML;
+}
+
+// 游戏筛选
+function filterGames(searchTerm) {
+    if (!searchTerm.trim()) {
+        filteredGames = [...games];
+    } else {
+        filteredGames = games.filter(game => 
+            game.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (game.description && game.description.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
+    }
+    renderGames(filteredGames);
+}
+
+// 按分类筛选
+function filterByCategory(category) {
+    if (category === 'all') {
+        filteredGames = [...games];
+    } else if (category === 'latest') {
+        filteredGames = [...games].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    } else {
+        filteredGames = games.filter(game => game.category === category);
+    }
+    renderGames(filteredGames);
+}
+
+// 播放游戏
+async function playGame(gameId) {
+    try {
+        const response = await fetch(`/api/games/${gameId}`);
+        const game = await response.json();
+        
+        document.getElementById('gameModalTitle').textContent = game.title;
+        document.getElementById('gameFrame').src = `/${game.game_path}`;
+        
+        const gameModal = new bootstrap.Modal(document.getElementById('gameModal'));
+        gameModal.show();
+        
+        // 更新游戏播放次数（在界面上）
+        setTimeout(() => {
+            loadGames(); // 重新加载以获取更新的播放次数
+        }, 1000);
+        
+    } catch (error) {
+        console.error('播放游戏失败:', error);
+        alert('Failed to load game. Please try again.');
+    }
+}
+
+// 显示联系我们模态框
+function showContactModal() {
+    const contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
+    contactModal.show();
+}
+
+// 显示隐私政策模态框
+function showPrivacyModal() {
+    const privacyModal = new bootstrap.Modal(document.getElementById('privacyModal'));
+    privacyModal.show();
+}
+
+// 显示开发者信息模态框
+function showDeveloperModal() {
+    const developerModal = new bootstrap.Modal(document.getElementById('developerModal'));
+    developerModal.show();
+}
+
+// 显示服务条款模态框
+function showTermsModal() {
+    // 创建临时模态框
+    const termsHTML = `
+        <div class="modal fade" id="termsModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">${translations[currentLanguage]['footer.terms'] || 'Terms of Service'}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h6>Acceptance of Terms</h6>
+                        <p>By accessing and using Fun Games platform, you accept and agree to be bound by the terms and provision of this agreement.</p>
+                        
+                        <h6>Use License</h6>
+                        <p>Permission is granted to temporarily access the games on Fun Games platform for personal, non-commercial transitory viewing only.</p>
+                        
+                        <h6>Disclaimer</h6>
+                        <p>The games on Fun Games platform are provided on an 'as is' basis. To the fullest extent permitted by law, we exclude all representations, warranties and conditions relating to our platform and the use of this platform.</p>
+                        
+                        <h6>Limitations</h6>
+                        <p>In no event shall Fun Games or its suppliers be liable for any damages arising out of the use or inability to use the games on this platform.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // 如果模态框不存在，创建它
+    if (!document.getElementById('termsModal')) {
+        document.body.insertAdjacentHTML('beforeend', termsHTML);
+    }
+    
+    const termsModal = new bootstrap.Modal(document.getElementById('termsModal'));
+    termsModal.show();
+}
+
+// 错误处理
+window.addEventListener('error', function(e) {
+    console.error('JavaScript错误:', e.error);
+});
+
+// 网络状态检测
+window.addEventListener('online', function() {
+    console.log('网络连接已恢复');
+    // 可以在这里重新加载游戏数据
+});
+
+window.addEventListener('offline', function() {
+    console.log('网络连接已断开');
+    // 可以在这里显示离线提示
+}); 

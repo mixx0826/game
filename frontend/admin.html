@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>乐玩小游戏 - 管理后台</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            border-radius: 8px;
+            margin: 2px 0;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .stats-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .stats-card:hover {
+            transform: translateY(-2px);
+        }
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .login-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+        .game-thumbnail {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            border-color: #667eea;
+            background-color: #f8f9ff;
+        }
+        .upload-area.dragover {
+            border-color: #667eea;
+            background-color: #f0f4ff;
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div id="loginPage" class="login-container">
+        <div class="login-card">
+            <div class="text-center mb-4">
+                <i class="fas fa-gamepad fa-3x text-primary mb-3"></i>
+                <h2>乐玩小游戏</h2>
+                <p class="text-muted">管理后台登录</p>
+            </div>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label">用户名</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        <input type="text" class="form-control" id="username" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">密码</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        <input type="password" class="form-control" id="password" required>
+                    </div>
+                </div>
+                <div id="loginError" class="alert alert-danger d-none"></div>
+                <button type="submit" class="btn btn-primary w-100 py-2">
+                    <i class="fas fa-sign-in-alt me-2"></i>登录
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 管理页面 -->
+    <div id="adminPage" class="d-none">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- 侧边栏 -->
+                <div class="col-md-3 col-lg-2 sidebar p-0">
+                    <div class="p-3">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-gamepad fa-2x mb-2"></i>
+                            <h5>乐玩小游戏</h5>
+                            <small>管理后台</small>
+                        </div>
+                        <nav class="nav flex-column">
+                            <a class="nav-link active" href="#" data-section="dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>仪表盘
+                            </a>
+                            <a class="nav-link" href="#" data-section="games">
+                                <i class="fas fa-gamepad me-2"></i>游戏管理
+                            </a>
+                            <a class="nav-link" href="#" data-section="ads">
+                                <i class="fas fa-ad me-2"></i>广告管理
+                            </a>
+                            <a class="nav-link" href="#" data-section="analytics">
+                                <i class="fas fa-chart-bar me-2"></i>数据统计
+                            </a>
+                            <a class="nav-link" href="#" data-section="settings">
+                                <i class="fas fa-cog me-2"></i>系统设置
+                            </a>
+                        </nav>
+                    </div>
+                    <div class="mt-auto p-3">
+                        <button class="btn btn-outline-light btn-sm w-100" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt me-2"></i>退出登录
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 主内容区 -->
+                <div class="col-md-9 col-lg-10 main-content">
+                    <!-- 仪表盘 -->
+                    <div id="dashboardSection" class="content-section active">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2><i class="fas fa-tachometer-alt me-2"></i>仪表盘</h2>
+                            <span class="text-muted">欢迎回来，管理员</span>
+                        </div>
+                        
+                        <!-- 统计卡片 -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 mb-3">
+                                <div class="stats-card text-center">
+                                    <i class="fas fa-gamepad fa-2x text-primary mb-2"></i>
+                                    <div class="stats-number" id="totalGames">0</div>
+                                    <div class="text-muted">游戏总数</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="stats-card text-center">
+                                    <i class="fas fa-play fa-2x text-success mb-2"></i>
+                                    <div class="stats-number" id="totalPlays">0</div>
+                                    <div class="text-muted">总播放次数</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="stats-card text-center">
+                                    <i class="fas fa-fire fa-2x text-warning mb-2"></i>
+                                    <div class="stats-number" id="activeGames">0</div>
+                                    <div class="text-muted">活跃游戏</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="stats-card text-center">
+                                    <i class="fas fa-mouse-pointer fa-2x text-info mb-2"></i>
+                                    <div class="stats-number" id="adClicks">0</div>
+                                    <div class="text-muted">广告点击</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 热门游戏 -->
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-trophy me-2"></i>热门游戏排行</h5>
+                                    </div>
+                                    <div class="card-body" id="popularGames">
+                                        <div class="text-center py-4">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">加载中...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5><i class="fas fa-clock me-2"></i>最新上传</h5>
+                                    </div>
+                                    <div class="card-body" id="recentGames">
+                                        <div class="text-center py-4">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">加载中...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 游戏管理 -->
+                    <div id="gamesSection" class="content-section">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2><i class="fas fa-gamepad me-2"></i>游戏管理</h2>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                                <i class="fas fa-plus me-2"></i>上传游戏
+                            </button>
+                        </div>
+
+                        <!-- 游戏列表 -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>游戏信息</th>
+                                                <th>分类</th>
+                                                <th>播放次数</th>
+                                                <th>状态</th>
+                                                <th>上传时间</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="gamesTable">
+                                            <tr>
+                                                <td colspan="7" class="text-center py-4">
+                                                    <div class="spinner-border text-primary" role="status">
+                                                        <span class="visually-hidden">加载中...</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 广告管理 -->
+                    <div id="adsSection" class="content-section">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2><i class="fas fa-ad me-2"></i>广告管理</h2>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>顶部横幅广告</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="topBannerForm">
+                                            <div class="mb-3">
+                                                <label class="form-label">广告代码</label>
+                                                <textarea class="form-control" name="ad_code" rows="6" placeholder="请粘贴广告联盟提供的代码"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="enabled" id="topBannerEnabled">
+                                                    <label class="form-check-label" for="topBannerEnabled">
+                                                        启用此广告位
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">保存设置</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>侧边栏广告</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="sidebarForm">
+                                            <div class="mb-3">
+                                                <label class="form-label">广告代码</label>
+                                                <textarea class="form-control" name="ad_code" rows="6" placeholder="请粘贴广告联盟提供的代码"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="enabled" id="sidebarEnabled">
+                                                    <label class="form-check-label" for="sidebarEnabled">
+                                                        启用此广告位
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">保存设置</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 数据统计 -->
+                    <div id="analyticsSection" class="content-section">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2><i class="fas fa-chart-bar me-2"></i>数据统计</h2>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>数据统计功能开发中，敬请期待...
+                        </div>
+                    </div>
+
+                    <!-- 系统设置 -->
+                    <div id="settingsSection" class="content-section">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2><i class="fas fa-cog me-2"></i>系统设置</h2>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>系统设置功能开发中，敬请期待...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 上传游戏模态框 -->
+    <div class="modal fade" id="uploadModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">上传新游戏</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="gameTitle" class="form-label">游戏名称 *</label>
+                                    <input type="text" class="form-control" id="gameTitle" name="title" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="gameCategory" class="form-label">游戏分类</label>
+                                    <select class="form-control" id="gameCategory" name="category">
+                                        <option value="casual">休闲</option>
+                                        <option value="puzzle">益智</option>
+                                        <option value="action">动作</option>
+                                        <option value="arcade">街机</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="gameDescription" class="form-label">游戏描述</label>
+                                    <textarea class="form-control" id="gameDescription" name="description" rows="4"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">游戏文件 (ZIP格式) *</label>
+                                    <div class="upload-area" id="uploadArea">
+                                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                        <p>点击或拖拽ZIP文件到此处</p>
+                                        <input type="file" class="form-control d-none" id="gameFile" name="gameFile" accept=".zip" required>
+                                        <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('gameFile').click()">
+                                            选择文件
+                                        </button>
+                                    </div>
+                                    <div id="fileInfo" class="mt-2 d-none">
+                                        <small class="text-success">
+                                            <i class="fas fa-check-circle me-1"></i>
+                                            <span id="fileName"></span>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="gameThumbnail" class="form-label">游戏缩略图</label>
+                                    <input type="file" class="form-control" id="gameThumbnail" name="thumbnail" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="uploadGame()">
+                        <i class="fas fa-upload me-2"></i>上传游戏
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/admin.js"></script>
+</body>
+</html> 

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tank Battle - 坦克大战</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- 游戏界面 -->
+        <div id="gameArea" class="game-area">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+            
+            <!-- 游戏UI覆盖层 -->
+            <div class="game-ui">
+                <div class="score-panel">
+                    <div class="score-item">
+                        <span class="label">P1 Score:</span>
+                        <span id="player1Score" class="score">0</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="label">P2 Score:</span>
+                        <span id="player2Score" class="score">0</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="label">Lives:</span>
+                        <span id="livesCount" class="score">3</span>
+                    </div>
+                </div>
+                
+                <!-- 暂停按钮 -->
+                <button id="pauseBtn" class="pause-btn">⏸️</button>
+            </div>
+        </div>
+        
+        <!-- 开始菜单 -->
+        <div id="startMenu" class="menu">
+            <h1 class="game-title">🚀 Tank Battle 🚀</h1>
+            <p class="game-subtitle">坦克大战</p>
+            
+            <div class="menu-buttons">
+                <button id="startSingleBtn" class="menu-btn primary">
+                    <i class="icon">🎮</i>
+                    <span>Single Player</span>
+                </button>
+                <button id="startMultiBtn" class="menu-btn primary">
+                    <i class="icon">👥</i>
+                    <span>Two Players</span>
+                </button>
+                <button id="instructionsBtn" class="menu-btn secondary">
+                    <i class="icon">❓</i>
+                    <span>How to Play</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 游戏结束菜单 -->
+        <div id="gameOverMenu" class="menu hidden">
+            <h2 class="game-over-title">Game Over</h2>
+            <div id="gameOverMessage" class="game-over-message"></div>
+            <div id="finalScore" class="final-score"></div>
+            
+            <div class="menu-buttons">
+                <button id="restartBtn" class="menu-btn primary">
+                    <i class="icon">🔄</i>
+                    <span>Play Again</span>
+                </button>
+                <button id="backToMenuBtn" class="menu-btn secondary">
+                    <i class="icon">🏠</i>
+                    <span>Main Menu</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 说明界面 -->
+        <div id="instructionsMenu" class="menu hidden">
+            <h2 class="instructions-title">How to Play</h2>
+            
+            <div class="instructions-content">
+                <div class="player-controls">
+                    <h3>🎮 Player 1 Controls</h3>
+                    <div class="control-item">
+                        <kbd>W A S D</kbd> - Move tank
+                    </div>
+                    <div class="control-item">
+                        <kbd>Space</kbd> - Fire
+                    </div>
+                </div>
+                
+                <div class="player-controls">
+                    <h3>🎮 Player 2 Controls (Two Player Mode)</h3>
+                    <div class="control-item">
+                        <kbd>↑ ← ↓ →</kbd> - Move tank
+                    </div>
+                    <div class="control-item">
+                        <kbd>Enter</kbd> - Fire
+                    </div>
+                </div>
+                
+                <div class="game-rules">
+                    <h3>🏆 Game Rules</h3>
+                    <ul>
+                        <li>🎯 Destroy enemy tanks to score points</li>
+                        <li>💥 Avoid enemy bullets</li>
+                        <li>🧱 Use walls for cover (destroyable)</li>
+                        <li>❤️ You have 3 lives</li>
+                        <li>🏅 First to reach 10 points wins in 2P mode</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <button id="backFromInstructionsBtn" class="menu-btn primary">
+                <i class="icon">◀️</i>
+                <span>Back</span>
+            </button>
+        </div>
+        
+        <!-- 暂停菜单 -->
+        <div id="pauseMenu" class="menu hidden">
+            <h2 class="pause-title">Game Paused</h2>
+            
+            <div class="menu-buttons">
+                <button id="resumeBtn" class="menu-btn primary">
+                    <i class="icon">▶️</i>
+                    <span>Resume</span>
+                </button>
+                <button id="pauseToMenuBtn" class="menu-btn secondary">
+                    <i class="icon">🏠</i>
+                    <span>Main Menu</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 移动端控制 -->
+    <div class="mobile-controls" id="mobileControls">
+        <div class="control-group left">
+            <div class="dpad">
+                <button class="dpad-btn up" data-direction="up">↑</button>
+                <button class="dpad-btn left" data-direction="left">←</button>
+                <button class="dpad-btn down" data-direction="down">↓</button>
+                <button class="dpad-btn right" data-direction="right">→</button>
+            </div>
+        </div>
+        
+        <div class="control-group right">
+            <button class="fire-btn" id="mobileFireBtn">🔥</button>
+        </div>
+    </div>
+
+    <script src="js/game.js"></script>
+</body>
+</html> 

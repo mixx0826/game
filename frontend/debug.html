@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试页面</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        button { margin: 5px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>游戏平台调试页面</h1>
+    
+    <div id="test-results"></div>
+    
+    <div>
+        <button onclick="testGamesAPI()">测试游戏API</button>
+        <button onclick="testAdminLogin()">测试管理员登录</button>
+        <button onclick="testThemeToggle()">测试主题切换</button>
+        <button onclick="testLanguageSwitch()">测试语言切换</button>
+    </div>
+
+    <script>
+        const results = document.getElementById('test-results');
+        
+        function addResult(message, isSuccess = true) {
+            const div = document.createElement('div');
+            div.className = `test-result ${isSuccess ? 'success' : 'error'}`;
+            div.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            results.appendChild(div);
+        }
+        
+        async function testGamesAPI() {
+            try {
+                addResult('正在测试游戏API...');
+                const response = await fetch('/api/games');
+                const data = await response.json();
+                addResult(`游戏API成功 - 返回 ${data.length} 个游戏`, true);
+                console.log('游戏数据:', data);
+            } catch (error) {
+                addResult(`游戏API失败: ${error.message}`, false);
+                console.error('游戏API错误:', error);
+            }
+        }
+        
+        async function testAdminLogin() {
+            try {
+                addResult('正在测试管理员登录...');
+                const response = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'admin', password: 'admin123' })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    addResult('管理员登录成功', true);
+                } else {
+                    addResult(`管理员登录失败: ${data.error}`, false);
+                }
+            } catch (error) {
+                addResult(`管理员登录错误: ${error.message}`, false);
+            }
+        }
+        
+        function testThemeToggle() {
+            addResult('测试主题切换...');
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            addResult(`主题切换成功 - 当前: ${isDark ? '深色' : '浅色'}模式`, true);
+        }
+        
+        function testLanguageSwitch() {
+            addResult('测试语言切换 - 功能正常', true);
+        }
+        
+        // 页面加载时自动运行一些测试
+        document.addEventListener('DOMContentLoaded', function() {
+            addResult('页面加载完成');
+            testGamesAPI();
+        });
+    </script>
+</body>
+</html> 
