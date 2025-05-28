@@ -11,27 +11,15 @@ const fs = require('fs');
 const unzipper = require('unzipper');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-here';
 
-// 配置文件上传
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = path.join(__dirname, '../uploads');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
+// 使用内存数据库（适合无服务器环境）
+const db = new sqlite3.Database(':memory:');
 
+// 配置文件上传 - 简化版本适合无服务器环境
 const upload = multer({ 
-  storage: storage,
+  storage: multer.memoryStorage(), // 使用内存存储
   fileFilter: (req, file, cb) => {
-    // 支持ZIP文件和图片文件
     if (file.fieldname === 'gameFile') {
       if (file.mimetype === 'application/zip' || file.originalname.endsWith('.zip')) {
         cb(null, true);
@@ -49,12 +37,9 @@ const upload = multer({
     }
   },
   limits: {
-    fileSize: 50 * 1024 * 1024 // 50MB限制
+    fileSize: 10 * 1024 * 1024 // 10MB限制（无服务器环境限制）
   }
 });
-
-// 数据库初始化
-const db = new sqlite3.Database(path.join(__dirname, '../game_platform.db'));
 
 // 初始化数据库表
 db.serialize(() => {
@@ -92,6 +77,29 @@ db.serialize(() => {
   // 创建默认管理员账户
   const hashedPassword = bcrypt.hashSync('admin123', 10);
   db.run('INSERT OR IGNORE INTO admins (username, password) VALUES (?, ?)', ['admin', hashedPassword]);
+
+  // 添加一些示例游戏数据
+  const sampleGames = [
+    {
+      title: '2048',
+      description: '经典数字合成游戏，合并相同数字达到2048！',
+      thumbnail: '/static/images/default-game.svg',
+      game_path: '/games/2048',
+      category: 'puzzle'
+    },
+    {
+      title: '贪吃蛇',
+      description: '经典贪吃蛇游戏，控制蛇吃食物成长！',
+      thumbnail: '/static/images/default-game.svg',
+      game_path: '/games/snake',
+      category: 'arcade'
+    }
+  ];
+
+  sampleGames.forEach(game => {
+    db.run('INSERT OR IGNORE INTO games (title, description, thumbnail, game_path, category) VALUES (?, ?, ?, ?, ?)', 
+      [game.title, game.description, game.thumbnail, game.game_path, game.category]);
+  });
 });
 
 // 中间件配置
@@ -99,6 +107,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// 简化的session配置
 app.use(session({
   secret: JWT_SECRET,
   resave: false,
@@ -106,10 +116,9 @@ app.use(session({
   cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
 }));
 
-// 静态文件服务
+// 静态文件服务 - 简化路径
 app.use('/static', express.static(path.join(__dirname, '../static')));
 app.use('/games', express.static(path.join(__dirname, '../games')));
-app.use('/', express.static(path.join(__dirname, '../frontend')));
 
 // 认证中间件
 const authenticateToken = (req, res, next) => {
@@ -129,6 +138,51 @@ const authenticateToken = (req, res, next) => {
 };
 
 // API 路由
+
+// 根路由 - 返回主页
+app.get('/', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>乐玩小游戏</title>
+        <style>
+            body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+            .container { max-width: 800px; margin: 0 auto; }
+            .game-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px; }
+            .game-card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; background: #f9f9f9; }
+            .btn { background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 10px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🎮 乐玩小游戏平台</h1>
+            <p>欢迎来到我们的休闲游戏聚合平台！</p>
+            <div>
+                <a href="/admin.html" class="btn">管理后台</a>
+                <a href="/api/games" class="btn">游戏列表API</a>
+            </div>
+            <div class="game-grid">
+                <div class="game-card">
+                    <h3>🧩 2048</h3>
+                    <p>经典数字合成游戏</p>
+                </div>
+                <div class="game-card">
+                    <h3>🐍 贪吃蛇</h3>
+                    <p>经典街机游戏</p>
+                </div>
+            </div>
+            <p style="margin-top: 40px; color: #666;">
+                平台状态：✅ 正常运行<br>
+                部署环境：Vercel 无服务器
+            </p>
+        </div>
+    </body>
+    </html>
+  `);
+});
 
 // 管理员登录
 app.post('/api/admin/login', (req, res) => {
@@ -206,381 +260,29 @@ app.get('/api/admin/games', authenticateToken, (req, res) => {
   });
 });
 
-// 管理员 - 更新游戏状态
-app.put('/api/admin/games/:id', authenticateToken, (req, res) => {
-  const gameId = req.params.id;
-  const { is_active } = req.body;
-  
-  db.run(
-    'UPDATE games SET is_active = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-    [is_active ? 1 : 0, gameId],
-    function(err) {
-      if (err) {
-        return res.status(500).json({ error: '更新失败' });
-      }
-      
-      if (this.changes === 0) {
-        return res.status(404).json({ error: '游戏不存在' });
-      }
-      
-      res.json({ success: true, message: '状态更新成功' });
-    }
-  );
-});
-
-// 管理员 - 删除游戏
-app.delete('/api/admin/games/:id', authenticateToken, (req, res) => {
-  const gameId = req.params.id;
-  
-  // 先获取游戏信息，用于删除文件
-  db.get('SELECT * FROM games WHERE id = ?', [gameId], (err, game) => {
-    if (err) {
-      return res.status(500).json({ error: '数据库错误' });
-    }
-    
-    if (!game) {
-      return res.status(404).json({ error: '游戏不存在' });
-    }
-    
-    // 删除数据库记录
-    db.run('DELETE FROM games WHERE id = ?', [gameId], function(err) {
-      if (err) {
-        return res.status(500).json({ error: '删除失败' });
-      }
-      
-      // 删除游戏文件夹
-      if (game.game_path) {
-        const gamePath = path.join(__dirname, '../', game.game_path);
-        if (fs.existsSync(gamePath)) {
-          try {
-            fs.rmSync(gamePath, { recursive: true, force: true });
-          } catch (error) {
-            console.error('删除游戏文件失败:', error);
-          }
-        }
-      }
-      
-      res.json({ success: true, message: '删除成功' });
-    });
+// 健康检查接口
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    environment: 'Vercel Serverless',
+    message: '乐玩小游戏平台运行正常'
   });
 });
 
-// 管理员 - 上传游戏
-app.post('/api/admin/games/upload', authenticateToken, upload.fields([
-  { name: 'gameFile', maxCount: 1 },
-  { name: 'thumbnail', maxCount: 1 }
-]), async (req, res) => {
-  try {
-    const { title, description, category } = req.body;
-    const gameFile = req.files && req.files.gameFile ? req.files.gameFile[0] : null;
-    const thumbnailFile = req.files && req.files.thumbnail ? req.files.thumbnail[0] : null;
-    
-    if (!gameFile) {
-      return res.status(400).json({ error: '请选择游戏文件' });
-    }
-    
-    if (!title) {
-      return res.status(400).json({ error: '请输入游戏名称' });
-    }
-    
-    // 创建游戏目录
-    const gameDir = `games/${Date.now()}-${title.replace(/[^a-zA-Z0-9]/g, '_')}`;
-    const gamePath = path.join(__dirname, '../', gameDir);
-    
-    if (!fs.existsSync(gamePath)) {
-      fs.mkdirSync(gamePath, { recursive: true });
-    }
-    
-    // 解压ZIP文件
-    await new Promise((resolve, reject) => {
-      fs.createReadStream(gameFile.path)
-        .pipe(unzipper.Extract({ path: gamePath }))
-        .on('close', resolve)
-        .on('error', reject);
-    });
-    
-    // 智能检测index.html文件
-    function findIndexFile(dir) {
-      const files = fs.readdirSync(dir, { withFileTypes: true });
-      
-      // 首先在当前目录查找index.html (大小写不敏感)
-      for (const file of files) {
-        if (file.isFile() && file.name.toLowerCase() === 'index.html') {
-          return path.join(dir, file.name);
-        }
-      }
-      
-      // 如果当前目录没有，递归查找子目录
-      for (const file of files) {
-        if (file.isDirectory()) {
-          const subDir = path.join(dir, file.name);
-          const indexPath = findIndexFile(subDir);
-          if (indexPath) {
-            return indexPath;
-          }
-        }
-      }
-      
-      return null;
-    }
-    
-    const indexPath = findIndexFile(gamePath);
-    if (!indexPath) {
-      // 清理文件
-      fs.rmSync(gamePath, { recursive: true, force: true });
-      fs.unlinkSync(gameFile.path);
-      if (thumbnailFile) fs.unlinkSync(thumbnailFile.path);
-      return res.status(400).json({ error: 'ZIP文件中必须包含index.html文件' });
-    }
-    
-    // 如果index.html在子目录中，需要调整游戏路径
-    const relativePath = path.relative(gamePath, indexPath);
-    const gameIndexPath = `${gameDir}/${relativePath.replace(/\\/g, '/')}`;
-    
-    // 处理缩略图
-    let thumbnail = null;
-    if (thumbnailFile) {
-      // 使用上传的缩略图
-      const thumbnailExt = path.extname(thumbnailFile.originalname);
-      const thumbnailName = `thumbnail${thumbnailExt}`;
-      const thumbnailDestPath = path.join(gamePath, thumbnailName);
-      fs.copyFileSync(thumbnailFile.path, thumbnailDestPath);
-      fs.unlinkSync(thumbnailFile.path);
-      thumbnail = `/${gameDir}/${thumbnailName}`;
-    } else {
-      // 查找ZIP中的缩略图
-      const thumbnailFiles = ['thumbnail.png', 'thumbnail.jpg', 'thumbnail.jpeg', 'icon.png', 'icon.jpg'];
-      for (const thumbFile of thumbnailFiles) {
-        const thumbPath = path.join(gamePath, thumbFile);
-        if (fs.existsSync(thumbPath)) {
-          thumbnail = `/${gameDir}/${thumbFile}`;
-          break;
-        }
-      }
-    }
-    
-    // 保存到数据库
-    db.run(
-      'INSERT INTO games (title, description, thumbnail, game_path, category) VALUES (?, ?, ?, ?, ?)',
-      [title, description || '', thumbnail, gameIndexPath, category || 'casual'],
-      function(err) {
-        if (err) {
-          console.error('保存游戏到数据库失败:', err);
-          // 清理文件
-          fs.rmSync(gamePath, { recursive: true, force: true });
-          fs.unlinkSync(gameFile.path);
-          return res.status(500).json({ error: '保存游戏失败' });
-        }
-        
-        // 删除上传的ZIP文件
-        fs.unlinkSync(gameFile.path);
-        
-        res.json({ 
-          success: true, 
-          message: '游戏上传成功',
-          gameId: this.lastID
-        });
-      }
-    );
-    
-  } catch (error) {
-    console.error('上传游戏失败:', error);
-    
-    // 清理文件
-    if (req.files) {
-      if (req.files.gameFile) {
-        try { fs.unlinkSync(req.files.gameFile[0].path); } catch (e) {}
-      }
-      if (req.files.thumbnail) {
-        try { fs.unlinkSync(req.files.thumbnail[0].path); } catch (e) {}
-      }
-    }
-    
-    res.status(500).json({ error: '上传失败: ' + error.message });
-  }
-});
-
-// 管理员 - 获取仪表盘数据
-app.get('/api/admin/dashboard', authenticateToken, (req, res) => {
-  db.all(`
-    SELECT 
-      (SELECT COUNT(*) FROM games) as total_games,
-      (SELECT COUNT(*) FROM games WHERE is_active = 1) as active_games,
-      (SELECT SUM(play_count) FROM games) as total_plays
-  `, [], (err, stats) => {
-    if (err) {
-      return res.status(500).json({ error: '数据库错误' });
-    }
-    
-    db.all('SELECT title, play_count FROM games WHERE is_active = 1 ORDER BY play_count DESC LIMIT 10', (err, popularGames) => {
-      if (err) {
-        return res.status(500).json({ error: '数据库错误' });
-      }
-      
-      res.json({
-        stats: stats[0] || { total_games: 0, active_games: 0, total_plays: 0 },
-        popularGames: popularGames || []
-      });
-    });
+// 错误处理中间件
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ 
+    error: '服务器内部错误',
+    message: process.env.NODE_ENV === 'development' ? err.message : '请稍后重试'
   });
 });
 
-// 广告配置相关接口
-app.get('/api/ad-configs', (req, res) => {
-  db.all('SELECT * FROM ad_configs WHERE is_active = 1', (err, configs) => {
-    if (err) {
-      return res.status(500).json({ error: '数据库错误' });
-    }
-    res.json(configs);
-  });
+// 404处理
+app.use((req, res) => {
+  res.status(404).json({ error: '接口不存在' });
 });
 
-app.post('/api/admin/ad-configs', authenticateToken, (req, res) => {
-  const { position, ad_code } = req.body;
-  
-  db.run(
-    'INSERT OR REPLACE INTO ad_configs (position, ad_code, is_active) VALUES (?, ?, 1)',
-    [position, ad_code],
-    function(err) {
-      if (err) {
-        return res.status(500).json({ error: '保存失败' });
-      }
-      res.json({ success: true, message: '广告配置保存成功' });
-    }
-  );
-});
-
-// 游戏播放页面路由
-app.get('/game/:id', (req, res) => {
-  const gameId = req.params.id;
-  
-  db.get('SELECT * FROM games WHERE id = ? AND is_active = 1', [gameId], (err, game) => {
-    if (err) {
-      console.error('数据库错误:', err);
-      return res.status(500).send('内部服务器错误');
-    }
-    
-    if (!game) {
-      return res.status(404).send('游戏不存在');
-    }
-    
-    // 返回游戏页面HTML
-    const gamePageHtml = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${game.title} - Fun Games</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #1a1a1a;
-            overflow: hidden;
-        }
-        .game-container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .game-header {
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-        }
-        .game-frame {
-            flex: 1;
-            border: none;
-            width: 100%;
-            height: calc(100vh - 60px);
-        }
-        .back-btn {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .back-btn:hover {
-            background: #0056b3;
-            color: white;
-            text-decoration: none;
-        }
-        .game-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-    </style>
-</head>
-<body>
-    <div class="game-container">
-        <div class="game-header">
-            <div class="game-info">
-                <a href="/" class="back-btn">
-                    <i class="fas fa-arrow-left"></i>
-                    返回游戏列表
-                </a>
-                <h4 class="mb-0">${game.title}</h4>
-            </div>
-            <div class="game-stats">
-                <small><i class="fas fa-eye"></i> ${game.play_count || 0} 次游玩</small>
-            </div>
-        </div>
-        <iframe src="/${game.game_path}" class="game-frame" allowfullscreen></iframe>
-    </div>
-    
-    <script>
-        // 增加游戏播放次数
-        fetch('/api/games/${gameId}/play', {
-            method: 'POST'
-        }).catch(error => console.error('Error updating play count:', error));
-        
-        // 键盘快捷键
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                window.close();
-            }
-        });
-    </script>
-</body>
-</html>`;
-    
-    res.send(gamePageHtml);
-  });
-});
-
-// 增加游戏播放次数的API
-app.post('/api/games/:id/play', (req, res) => {
-  const gameId = req.params.id;
-  
-  db.run('UPDATE games SET play_count = play_count + 1 WHERE id = ? AND is_active = 1', [gameId], function(err) {
-    if (err) {
-      console.error('更新播放次数失败:', err);
-      return res.status(500).json({ error: '更新失败' });
-    }
-    
-    res.json({ success: true, playCount: this.changes });
-  });
-});
-
-// 启动服务器
-app.listen(PORT, () => {
-  console.log(`服务器运行在 http://localhost:${PORT}`);
-  console.log('默认管理员账户: admin / admin123');
-});
-
+// 导出为Vercel函数
 module.exports = app;
