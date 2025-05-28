@@ -1,39 +1,9 @@
 {
   "version": 2,
-  "name": "game-platform",
-  "functions": {
-    "backend/server.js": {
-      "runtime": "@vercel/node",
-      "maxDuration": 30
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api"
     }
-  },
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/backend/server.js"
-    },
-    {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
-      "src": "/games/(.*)",
-      "dest": "/games/$1"
-    },
-    {
-      "src": "/admin.html",
-      "dest": "/frontend/admin.html"
-    },
-    {
-      "src": "/game/(.*)",
-      "dest": "/backend/server.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/$1"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 } 
