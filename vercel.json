@@ -1,12 +1,12 @@
 {
   "version": 2,
   "name": "game-platform",
-  "builds": [
-    {
-      "src": "backend/server.js",
-      "use": "@vercel/node"
+  "functions": {
+    "backend/server.js": {
+      "runtime": "@vercel/node",
+      "maxDuration": 30
     }
-  ],
+  },
   "routes": [
     {
       "src": "/api/(.*)",
@@ -33,11 +33,6 @@
       "dest": "/frontend/$1"
     }
   ],
-  "functions": {
-    "backend/server.js": {
-      "maxDuration": 30
-    }
-  },
   "env": {
     "NODE_ENV": "production"
   }
